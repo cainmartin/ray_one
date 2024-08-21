@@ -4,17 +4,18 @@ import "core:fmt"
 import "core:os"
 import "core:strings"
 
-// TODO: I need to get a good example of file handling - THERE IS NO DOCUMENTATION!!
 draw_ppm :: proc(width: int, height: int, filename: string) {
-	// TODO: Separate functionality
-	sb := strings.builder_make()
+	fd, err := os.open(filename, os.O_CREATE | os.O_RDWR)
+	defer os.close(fd)
 
-	// There has to be a better way to do this...
-	strings.write_string(&sb, "P3\n")
-	strings.write_int(&sb, width)
-	strings.write_byte(&sb, ' ')
-	strings.write_int(&sb, height)
-	strings.write_string(&sb, "\n255\n")
+	if err != os.ERROR_NONE
+	{
+		fmt.panicf("Error opening file: ", err)
+	}
+
+	// Write the header
+	sb := fmt.tprintf("P3\n%d %d\n255\n", width, height);
+	os.write_string(fd, sb)
 
 	for row := 0; row < height; row += 1 {
 		for col := 0; col < width; col += 1 {
@@ -26,24 +27,10 @@ draw_ppm :: proc(width: int, height: int, filename: string) {
 			ig := int(255.99 * g)
 			ib := int(255.99 * b)
 
-			// TODO: Work out how to do this properlly
-			strings.write_int(&sb, ir)
-			strings.write_byte(&sb, ' ')
-			strings.write_int(&sb, ig)
-			strings.write_byte(&sb, ' ')
-			strings.write_int(&sb, ib)
-			strings.write_byte(&sb, '\n')
-		}
+			sb := fmt.tprintf("%d %d %d\n", ir, ig, ib);
+			os.write_string(fd, sb)
+	 	}
 	}
-	// Convert the string builder content to a string
-	content := strings.to_string(sb)
-
-	// SAFELY transmute the string to a byte slice
-	bytes := transmute([]u8)(content)
-
-	// Write the content to the specified file
-	os.write_entire_file(filename, bytes)
-
 }
 
 main :: proc() {
