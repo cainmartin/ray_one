@@ -22,8 +22,8 @@ draw_ppm :: proc(width: int, height: int, filename: string) {
 	builder := strings.builder_make()
 	defer strings.builder_destroy(&builder)
 
-	for row := height - 1; row >= 0; row -= 1 {
-		fmt.printf("\rRendering row: %d", row)
+	for row := 0; row < height; row += 1 {
+		fmt.printf("\rRendering row %d of %d", row + 1, height)
 		for col := 0; col < width; col += 1 {
 			r := f32(col) / f32(width - 1)
 			g := f32(row) / f32(height - 1)
