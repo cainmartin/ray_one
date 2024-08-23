@@ -7,19 +7,23 @@ import "core:os"
 import "core:strings"
 
 draw_ppm :: proc(width: int, height: int, filename: string) {
-	fd, err := os.open(filename, os.O_CREATE | os.O_RDWR)
+	fd, err := os.open(filename, os.O_CREATE | os.O_RDWR | os.O_TRUNC)
 	defer os.close(fd)
 
 	if err != os.ERROR_NONE {
-		fmt.panicf("Error opening file: ", err)
+		fmt.panicf("Error opening file: '%s' : %v", filename, err)
 	}
 
 	// Write the header
-	sb := fmt.tprintf("P3\n%d %d\n255\n", width, height)
-	os.write_string(fd, sb)
+	header := fmt.tprintf("P3\n%d %d\n255\n", width, height)
+	os.write_string(fd, header)
 
-	for row := 0; row < height; row += 1 {
-		fmt.println("Rendering row: ", height - row)
+	// Buffer the writing
+	builder := strings.builder_make()
+	defer strings.builder_destroy(&builder)
+
+	for row := height - 1; row >= 0; row -= 1 {
+		fmt.printf("\rRendering row: %d", row)
 		for col := 0; col < width; col += 1 {
 			r := f32(col) / f32(width - 1)
 			g := f32(row) / f32(height - 1)
@@ -29,25 +33,17 @@ draw_ppm :: proc(width: int, height: int, filename: string) {
 			ig := int(255.99 * g)
 			ib := int(255.99 * b)
 
-			sb := fmt.tprintf("%d %d %d\n", ir, ig, ib)
-			os.write_string(fd, sb)
+			fmt.sbprintf(&builder, "%d %d %d\n", ir, ig, ib)
 		}
 	}
 
-	fmt.println("Completed.")
+	os.write_string(fd, strings.to_string(builder))
+	fmt.println("\nRender complete.")
 }
 
 main :: proc() {
 	fmt.println("Book 1 - Raytracing in a weekend")
 
 	// First steps in the book - output a PPM image format
-	draw_ppm(600, 600, "test_img.ppm")
-
-	a := Vec3{1, 2, 3}
-	b := a + 1
-
-	c := linalg.vector_dot(a, b)
-
-	fmt.println("Result: ", c)
-
+	draw_ppm(640, 480, "test_img.ppm")
 }
