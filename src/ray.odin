@@ -14,3 +14,8 @@ ray_new :: proc(origin: Point3, direction: Vec3) -> Ray {
 ray_at :: proc(r: Ray, t: f64) -> Point3 {
 	return r.orig + Vec3(t * t) * r.dir
 }
+
+// TODO: Need to do calculation for the color
+ray_color :: proc(r: Ray) -> Color {
+	return Color{0.0, 1.0, 0.0}
+}

@@ -6,7 +6,16 @@ import "core:math/linalg"
 import "core:os"
 import "core:strings"
 
-draw_ppm :: proc(width: int, height: int, filename: string) {
+Context :: struct {
+	width:         int,
+	height:        int,
+	camera_center: Vec3,
+	pixel_delta_u: Vec3,
+	pixel_delta_v: Vec3,
+	pixel00_loc:   Vec3,
+}
+
+draw_ppm :: proc(ctx: Context, filename: string) {
 	fd, err := os.open(filename, os.O_CREATE | os.O_RDWR | os.O_TRUNC)
 	defer os.close(fd)
 
@@ -18,16 +27,19 @@ draw_ppm :: proc(width: int, height: int, filename: string) {
 	defer strings.builder_destroy(&builder)
 
 	// Write the header
-	fmt.sbprintf(&builder, "P3\n%d %d\n255\n", width, height)
+	fmt.sbprintf(&builder, "P3\n%d %d\n255\n", ctx.width, ctx.height)
 
-	for row := 0; row < height; row += 1 {
-		fmt.printf("\rRendering row %d of %d", row + 1, height)
-		for col := 0; col < width; col += 1 {
-			r := f64(col) / f64(width - 1)
-			g := f64(row) / f64(height - 1)
-			b := 0.0
+	for row := 0; row < ctx.height; row += 1 {
+		fmt.printf("\rRendering row %d of %d", row + 1, ctx.height)
+		for col := 0; col < ctx.width; col += 1 {
 
-			write_color(&builder, Color{r, g, b})
+			pixel_center :=
+				ctx.pixel00_loc + (f64(col) * ctx.pixel_delta_u) + (f64(row) * ctx.pixel_delta_v)
+			ray_direction := pixel_center - ctx.camera_center
+			r := ray_new(ctx.camera_center, ray_direction)
+			pixel_color := ray_color(r)
+
+			write_color(&builder, pixel_color)
 		}
 	}
 
@@ -61,7 +73,15 @@ main :: proc() {
 		camera_center - Vec3{0, 0, focal_length} - (viewport_u / 2) - (viewport_v / 2)
 	pixel00_loc := viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v)
 
+	ctx := Context {
+		image_width,
+		image_height,
+		camera_center,
+		pixel_delta_u,
+		pixel_delta_v,
+		pixel00_loc,
+	}
 
 	// First steps in the book - output a PPM image format
-	draw_ppm(640, 480, "test_img.ppm")
+	draw_ppm(ctx, "test_img.ppm")
 }
