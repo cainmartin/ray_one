@@ -1,7 +1,5 @@
 package main
 
-import "math.odin"
-
 Point3 :: Vec3
 
 Ray :: struct {
@@ -14,5 +12,5 @@ ray_new :: proc(origin: Point3, direction: Vec3) -> Ray {
 }
 
 ray_at :: proc(r: Ray, t: f64) -> Point3 {
-	return r.orig + Vec3(t * f32(t)) * r.dir
+	return r.orig + Vec3(t * t) * r.dir
 }
