@@ -51,7 +51,7 @@ main :: proc() {
 	fmt.println("Book 1 - Raytracing in a weekend")
 
 	ratio := 16.0 / 9.0
-	image_width := 400
+	image_width := 800
 	image_height := int(f64(image_width) / ratio)
 
 	image_height = image_height < 1 ? 1 : image_height

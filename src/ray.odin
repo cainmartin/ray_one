@@ -17,5 +17,8 @@ ray_at :: proc(r: Ray, t: f64) -> Point3 {
 
 // TODO: Need to do calculation for the color
 ray_color :: proc(r: Ray) -> Color {
-	return Color{0.0, 1.0, 0.0}
+	unit_direction := vec3_normalize(r.dir)
+	a := 0.5 * unit_direction.y + 1.0
+
+	return (1.0 - a) * Color{1.0, 1.0, 1.0} + a * Color{0.5, 0.7, 1.0}
 }
