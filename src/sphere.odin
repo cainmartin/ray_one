@@ -11,13 +11,7 @@ sphere_new :: proc(center: Vec3, radius: f64) -> Sphere {
 	return Sphere{center, math.max(0, radius)}
 }
 
-sphere_hit :: proc(
-	data: rawptr,
-	ray: Ray,
-	t_min: f64,
-	t_max: f64,
-	hit_record: ^HitRecord,
-) -> bool {
+sphere_hit :: proc(data: rawptr, ray: Ray, ray_t: Interval, hit_record: ^HitRecord) -> bool {
 	sphere := cast(^Sphere)data
 	oc := sphere.center - ray.orig
 	a := vec3_length_squared(ray.dir)
@@ -31,9 +25,9 @@ sphere_hit :: proc(
 
 	// Find the nearest root that lies within the acceptable range
 	root := (h - sqrtd) / a
-	if root <= t_min || t_max <= root {
+	if !interval_surrounds(ray_t, root) {
 		root = (h + sqrtd) / a
-		if root <= t_min || t_max <= root {
+		if !interval_surrounds(ray_t, root) {
 			return false
 		}
 	}

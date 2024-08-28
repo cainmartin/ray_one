@@ -15,7 +15,8 @@ ray_at :: proc(r: Ray, t: f64) -> Point3 {
 
 ray_color :: proc(r: Ray, world: ^HittableList) -> Color {
 	rec: HitRecord
-	if hit(world, r, 0, INFINITY, &rec) {
+
+	if hit(world, r, Interval{0, INFINITY}, &rec) {
 		return 0.5 * (rec.normal + Color{1, 1, 1})
 	}
 

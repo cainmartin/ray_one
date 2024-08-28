@@ -15,7 +15,7 @@ set_face_normal :: proc(hit: ^HitRecord, ray: Ray, outward_normal: Vec3) {
 // The interface / trait that represents a hittable object
 Hittable :: struct {
 	data: rawptr,
-	hit:  proc(data: rawptr, ray: Ray, t_min: f64, t_max: f64, hit_record: ^HitRecord) -> bool,
+	hit:  proc(data: rawptr, ray: Ray, ray_t: Interval, hit_record: ^HitRecord) -> bool,
 }
 
 // Container to hold list of objects that conform to the Hittable type
@@ -24,14 +24,15 @@ HittableList :: struct {
 }
 
 // Method to add 
-hit :: proc(list: ^HittableList, ray: Ray, t_min: f64, t_max: f64, rec: ^HitRecord) -> bool {
+hit :: proc(list: ^HittableList, ray: Ray, ray_t: Interval, rec: ^HitRecord) -> bool {
 
 	temp_rec: HitRecord
 	hit_anything := false
-	closest_so_far := t_max
+	closest_so_far := ray_t.max
 
 	for object in list.objects {
-		if object.hit(object.data, ray, t_min, closest_so_far, &temp_rec) {
+		interval := interval_new(ray_t.min, closest_so_far)
+		if object.hit(object.data, ray, interval, &temp_rec) {
 			hit_anything = true
 			closest_so_far = temp_rec.t
 			rec^ = temp_rec
