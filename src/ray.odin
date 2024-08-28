@@ -1,7 +1,5 @@
 package main
 
-Point3 :: Vec3
-
 Ray :: struct {
 	orig: Point3,
 	dir:  Vec3,
@@ -15,7 +13,6 @@ ray_at :: proc(r: Ray, t: f64) -> Point3 {
 	return r.orig + t * r.dir
 }
 
-// TODO: Need to do calculation for the color
 ray_color :: proc(r: Ray) -> Color {
 	t := hit_sphere(Vec3{0.0, 0.0, -1.0}, 0.5, r)
 

@@ -6,6 +6,12 @@ import "core:math/linalg"
 import "core:os"
 import "core:strings"
 
+// TODO:
+// - Possibly change the vector / point types to use distinct - then refactor to ensure these are used correctly
+// - General cleanup
+// -- Especially use of single letter variables
+// -- Change variable names so we don't use abbreviations, like orig and dir
+
 Context :: struct {
 	width:         int,
 	height:        int,

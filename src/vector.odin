@@ -4,6 +4,7 @@ import "core:math"
 import "core:math/rand"
 
 Vec3 :: [3]f64
+Point3 :: [3]f64
 
 vec3_length :: proc(v: Vec3) -> f64 {
 	return math.sqrt(vec3_length_squared(v))
