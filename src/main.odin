@@ -21,7 +21,7 @@ Context :: struct {
 	pixel00_loc:   Vec3,
 }
 
-draw_ppm :: proc(ctx: Context, filename: string) {
+draw_ppm :: proc(ctx: Context, filename: string, world: ^HittableList) {
 	fd, err := os.open(filename, os.O_CREATE | os.O_RDWR | os.O_TRUNC)
 	defer os.close(fd)
 
@@ -43,7 +43,7 @@ draw_ppm :: proc(ctx: Context, filename: string) {
 				ctx.pixel00_loc + (f64(col) * ctx.pixel_delta_u) + (f64(row) * ctx.pixel_delta_v)
 			ray_direction := pixel_center - ctx.camera_center
 			r := ray_new(ctx.camera_center, ray_direction)
-			pixel_color := ray_color(r)
+			pixel_color := ray_color(r, world)
 
 			write_color(&builder, pixel_color)
 		}
@@ -79,6 +79,14 @@ main :: proc() {
 		camera_center - Vec3{0, 0, focal_length} - (viewport_u / 2) - (viewport_v / 2)
 	pixel00_loc := viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v)
 
+	// Create the world
+	world: HittableList
+	sphere1 := sphere_new(Vec3{0.0, 0.0, -1.0}, 0.5)
+	sphere2 := sphere_new(Vec3{0.0, -100.5, -1.0}, 100.0)
+
+	append(&world.objects, Hittable{hit = sphere_hit, data = &sphere1})
+	append(&world.objects, Hittable{hit = sphere_hit, data = &sphere2})
+
 	ctx := Context {
 		image_width,
 		image_height,
@@ -89,5 +97,5 @@ main :: proc() {
 	}
 
 	// First steps in the book - output a PPM image format
-	draw_ppm(ctx, "test_img.ppm")
+	draw_ppm(ctx, "test_img.ppm", &world)
 }

@@ -24,13 +24,7 @@ HittableList :: struct {
 }
 
 // Method to add 
-hittable_list_check :: proc(
-	list: ^HittableList,
-	ray: Ray,
-	t_min: f64,
-	t_max: f64,
-	rec: ^HitRecord,
-) -> bool {
+hit :: proc(list: ^HittableList, ray: Ray, t_min: f64, t_max: f64, rec: ^HitRecord) -> bool {
 
 	temp_rec: HitRecord
 	hit_anything := false
