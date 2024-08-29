@@ -25,6 +25,7 @@ main :: proc() {
 	sphere1 := sphere_new(Vec3{0.0, 0.0, -1.0}, 0.5)
 	sphere2 := sphere_new(Vec3{0.0, -100.5, -1.0}, 100.0)
 
+	// TODO: THIS IS A POTENTIAL MEMORY ISSUE
 	append(&world.objects, Hittable{hit = sphere_hit, data = &sphere1})
 	append(&world.objects, Hittable{hit = sphere_hit, data = &sphere2})
 

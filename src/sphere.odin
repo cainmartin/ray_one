@@ -1,14 +1,24 @@
 package main
 
 import "core:math"
+import "core:mem"
 
 Sphere :: struct {
-	center: Vec3,
-	radius: f64,
+	center:   Vec3,
+	radius:   f64,
+	material: Material,
 }
 
 sphere_new :: proc(center: Vec3, radius: f64) -> Sphere {
-	return Sphere{center, math.max(0, radius)}
+
+	// TODO: need a way to clear up this memory
+	lambertian := lambertian_new(Color{0.5, 0.7, 0.3})
+
+	return Sphere {
+		center,
+		math.max(0, radius),
+		Material{data = lambertian, scatter = lambertian_scatter},
+	}
 }
 
 sphere_hit :: proc(data: rawptr, ray: Ray, ray_t: Interval, hit_record: ^HitRecord) -> bool {

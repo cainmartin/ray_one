@@ -23,7 +23,7 @@ HittableList :: struct {
 	objects: [dynamic]Hittable,
 }
 
-// Method to add 
+// TODO: Rename this so it doesn't get confused with the Hittable.proc method
 hit :: proc(list: ^HittableList, ray: Ray, ray_t: Interval, rec: ^HitRecord) -> bool {
 
 	temp_rec: HitRecord
