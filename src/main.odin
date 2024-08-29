@@ -18,6 +18,7 @@ main :: proc() {
 	ratio := 16.0 / 9.0
 	image_width := 800
 	samples_per_pixel := 100
+	max_depth := 50
 
 	// Create the world
 	world: HittableList
@@ -29,6 +30,6 @@ main :: proc() {
 
 	camera := camera_new()
 
-	camera_init(&camera, image_width, ratio, samples_per_pixel)
+	camera_init(&camera, image_width, ratio, samples_per_pixel, max_depth)
 	camera_render(&camera, "test_img.ppm", &world)
 }
