@@ -1,12 +1,13 @@
 package main
 
+import "core:fmt"
 import "core:math"
 import "core:mem"
 
 Sphere :: struct {
 	center:   Vec3,
 	radius:   f64,
-	material: Material,
+	material: ^Material,
 }
 
 sphere_new :: proc(center: Vec3, radius: f64) -> ^Sphere {
@@ -14,7 +15,8 @@ sphere_new :: proc(center: Vec3, radius: f64) -> ^Sphere {
     sphere := new(Sphere)
     sphere.center = center
     sphere.radius = radius
-    sphere.material = Material {
+	sphere.material = new(Material)
+    sphere.material^ = Material {
         data = lambertian,
         scatter = lambertian_scatter,
     }
@@ -25,6 +27,7 @@ sphere_new :: proc(center: Vec3, radius: f64) -> ^Sphere {
 sphere_destroy :: proc(data: rawptr) {
     sphere := cast(^Sphere)data
     free(sphere.material.data)
+	free(sphere.material)
     free(sphere)
 }
 
@@ -51,6 +54,7 @@ sphere_hit :: proc(data: rawptr, ray: Ray, ray_t: Interval, hit_record: ^HitReco
 
 	hit_record.t = root
 	hit_record.point = ray_at(ray, hit_record.t)
+	hit_record.material = sphere.material
 	outward_normal := (hit_record.point - sphere.center) / sphere.radius
 	set_face_normal(hit_record, ray, outward_normal)
 

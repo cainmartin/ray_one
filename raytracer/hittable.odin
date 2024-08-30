@@ -5,6 +5,7 @@ HitRecord :: struct {
 	normal:     Vec3,
 	t:          f64,
 	front_face: bool,
+	material: ^Material
 }
 
 set_face_normal :: proc(hit: ^HitRecord, ray: Ray, outward_normal: Vec3) {
