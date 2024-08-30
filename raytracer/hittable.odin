@@ -16,6 +16,7 @@ set_face_normal :: proc(hit: ^HitRecord, ray: Ray, outward_normal: Vec3) {
 Hittable :: struct {
 	data: rawptr,
 	hit:  proc(data: rawptr, ray: Ray, ray_t: Interval, hit_record: ^HitRecord) -> bool,
+    destroy: proc(data: rawptr),
 }
 
 // Container to hold list of objects that conform to the Hittable type
@@ -23,8 +24,7 @@ HittableList :: struct {
 	objects: [dynamic]Hittable,
 }
 
-// TODO: Rename this so it doesn't get confused with the Hittable.proc method
-hit :: proc(list: ^HittableList, ray: Ray, ray_t: Interval, rec: ^HitRecord) -> bool {
+process_hit :: proc(list: ^HittableList, ray: Ray, ray_t: Interval, rec: ^HitRecord) -> bool {
 
 	temp_rec: HitRecord
 	hit_anything := false

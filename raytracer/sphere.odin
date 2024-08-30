@@ -9,16 +9,23 @@ Sphere :: struct {
 	material: Material,
 }
 
-sphere_new :: proc(center: Vec3, radius: f64) -> Sphere {
-
-	// TODO: need a way to clear up this memory
+sphere_new :: proc(center: Vec3, radius: f64) -> ^Sphere {
 	lambertian := lambertian_new(Color{0.5, 0.7, 0.3})
+    sphere := new(Sphere)
+    sphere.center = center
+    sphere.radius = radius
+    sphere.material = Material {
+        data = lambertian,
+        scatter = lambertian_scatter,
+    }
 
-	return Sphere {
-		center,
-		math.max(0, radius),
-		Material{data = lambertian, scatter = lambertian_scatter},
-	}
+	return sphere
+}
+
+sphere_destroy :: proc(data: rawptr) {
+    sphere := cast(^Sphere)data
+    free(sphere.material.data)
+    free(sphere)
 }
 
 sphere_hit :: proc(data: rawptr, ray: Ray, ray_t: Interval, hit_record: ^HitRecord) -> bool {

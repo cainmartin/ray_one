@@ -112,7 +112,7 @@ ray_color :: proc(r: Ray, depth: int, world: ^HittableList) -> Color {
 
 	rec: HitRecord
 
-	if hit(world, r, Interval{0.001, INFINITY}, &rec) {
+	if process_hit(world, r, Interval{0.001, INFINITY}, &rec) {
 		// direction := vec3_random_unit_vector_on_hemisphere(rec.normal)
 		// Required for lambertian diffuse models
 		direction := rec.normal + vec3_random_unit_vector()

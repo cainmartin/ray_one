@@ -1,5 +1,7 @@
 package main
 
+import "core:fmt"
+
 Material :: struct {
 	data:    rawptr,
 	scatter: proc(
@@ -16,7 +18,7 @@ Lambertian :: struct {
 	albedo: Color,
 }
 
-// TODO: I probably want a standard to know if "_new" allocates on the heap/stack
+// *object*_destroy should clean up this memory
 lambertian_new :: proc(albedo: Color) -> ^Lambertian {
 	lambertian := new(Lambertian)
 	lambertian.albedo = albedo
@@ -30,9 +32,6 @@ lambertian_scatter :: proc(
 	attentuation: Color,
 	ray_scattered: Ray,
 ) -> bool {
+	fmt.println("I'm here")
 	return false
 }
-
-// lambertian_new :: proc(albedo: Color) -> Lambertian {
-// 	return Lambertian{albedo = albedo, base = Material{scatter = lambertian_scatter}}
-// }

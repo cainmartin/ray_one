@@ -26,11 +26,16 @@ main :: proc() {
 	sphere2 := sphere_new(Vec3{0.0, -100.5, -1.0}, 100.0)
 
 	// TODO: THIS IS A POTENTIAL MEMORY ISSUE
-	append(&world.objects, Hittable{hit = sphere_hit, data = &sphere1})
-	append(&world.objects, Hittable{hit = sphere_hit, data = &sphere2})
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
 
 	camera := camera_new()
 
 	camera_init(&camera, image_width, ratio, samples_per_pixel, max_depth)
 	camera_render(&camera, "test_img.ppm", &world)
+
+	// cleanup
+	for hittable in world.objects {
+		hittable.destroy(hittable.data)
+	}
 }
