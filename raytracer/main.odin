@@ -22,12 +22,43 @@ main :: proc() {
 
 	// Create the world
 	world: HittableList
-	sphere1 := sphere_new(Vec3{0.0, 0.0, -1.0}, 0.5)
-	sphere2 := sphere_new(Vec3{0.0, -100.5, -1.0}, 100.0)
+
+	// First material
+	material_ground := new(Material)
+	material_ground^ = Material {
+		data    = lambertian_new(Color{0.8, 0.8, 0.0}),
+		scatter = lambertian_scatter,
+	}
+
+	material_center := new(Material)
+	material_center^ = Material {
+		data    = lambertian_new(Color{0.1, 0.2, 0.5}),
+		scatter = lambertian_scatter,
+	}
+
+	material_left := new(Material)
+	material_left^ = Material {
+		data    = metal_new(Color{0.8, 0.8, 0.8}),
+		scatter = metal_scatter,
+	}
+
+	material_right := new(Material)
+	material_right^ = Material {
+		data    = metal_new(Color{0.8, 0.6, 0.2}),
+		scatter = metal_scatter,
+	}
+
+	// TODO: We will attempt to delete the memory more than once here
+	sphere1 := sphere_new(Vec3{0.0, -100.5, -1.0}, 100.0, material_ground)
+	sphere2 := sphere_new(Vec3{0.0, 0.0, -1.2}, 0.5, material_center)
+	sphere3 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.5, material_left)
+	sphere4 := sphere_new(Vec3{1.0, 0.0, -1.0}, 0.5, material_right)
 
 	// TODO: THIS IS A POTENTIAL MEMORY ISSUE
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere4})
 
 	camera := camera_new()
 

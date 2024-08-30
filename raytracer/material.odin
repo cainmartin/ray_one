@@ -6,10 +6,10 @@ Material :: struct {
 	data:    rawptr,
 	scatter: proc(
 		data: rawptr,
-		ray_int: Ray,
+		ray_in: Ray,
 		rec: HitRecord,
-		attentuation: Color,
-		ray_scattered: Ray,
+		attenuation: ^Color,
+		ray_scattered: ^Ray,
 	) -> bool,
 }
 
@@ -27,11 +27,47 @@ lambertian_new :: proc(albedo: Color) -> ^Lambertian {
 
 lambertian_scatter :: proc(
 	data: rawptr,
-	ray_int: Ray,
+	ray_in: Ray,
 	rec: HitRecord,
-	attentuation: Color,
-	ray_scattered: Ray,
+	attenuation: ^Color,
+	ray_scattered: ^Ray,
 ) -> bool {
-	fmt.println("I'm here")
-	return false
+	lambertian := cast(^Lambertian)data
+
+	scatter_direction := rec.normal + vec3_random_unit_vector()
+	if vec3_near_zero(scatter_direction) {
+		scatter_direction = rec.normal
+	}
+
+	ray_scattered^ = ray_new(rec.point, scatter_direction)
+	attenuation^ = lambertian.albedo
+
+	return true
+}
+
+// Metal material
+Metal :: struct {
+	albedo: Color,
+}
+
+metal_new :: proc(albedo: Color) -> ^Metal {
+	metal := new(Metal)
+	metal.albedo = albedo
+	return metal
+}
+
+metal_scatter :: proc(
+	data: rawptr,
+	ray_in: Ray,
+	rec: HitRecord,
+	attenuation: ^Color,
+	ray_scattered: ^Ray,
+) -> bool {
+	metal := cast(^Metal)data
+
+	reflected := vec3_reflect(ray_in.dir, rec.normal)
+	ray_scattered^ = ray_new(rec.point, reflected)
+	attenuation^ = metal.albedo
+
+	return true
 }

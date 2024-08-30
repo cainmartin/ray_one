@@ -10,25 +10,25 @@ Sphere :: struct {
 	material: ^Material,
 }
 
-sphere_new :: proc(center: Vec3, radius: f64) -> ^Sphere {
+sphere_new :: proc(center: Vec3, radius: f64, material: ^Material) -> ^Sphere {
 	lambertian := lambertian_new(Color{0.5, 0.7, 0.3})
-    sphere := new(Sphere)
-    sphere.center = center
-    sphere.radius = radius
-	sphere.material = new(Material)
-    sphere.material^ = Material {
-        data = lambertian,
-        scatter = lambertian_scatter,
-    }
+	sphere := new(Sphere)
+	sphere.center = center
+	sphere.radius = radius
+	sphere.material = material
 
 	return sphere
 }
 
 sphere_destroy :: proc(data: rawptr) {
-    sphere := cast(^Sphere)data
-    free(sphere.material.data)
-	free(sphere.material)
-    free(sphere)
+	sphere := cast(^Sphere)data
+	if sphere.material != nil {
+		if sphere.material.data != nil {
+			free(sphere.material.data)
+		}
+		free(sphere.material)
+	}
+	free(sphere)
 }
 
 sphere_hit :: proc(data: rawptr, ray: Ray, ray_t: Interval, hit_record: ^HitRecord) -> bool {

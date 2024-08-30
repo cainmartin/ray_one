@@ -58,14 +58,15 @@ vec3_distance :: proc(a, b: Vec3) -> f64 {
 }
 
 vec3_reflect :: proc(v, n: Vec3) -> Vec3 {
-	dot_product := vec3_dot(v, n)
-	return Vec3 {
-		v.x - 2 * dot_product * n.x,
-		v.y - 2 * dot_product * n.y,
-		v.z - 2 * dot_product * n.z,
-	}
+	return v - 2.0 * vec3_dot(v, n) * n
 }
 
 vec3_random :: proc(min: f64, max: f64) -> Vec3 {
 	return Vec3{random_f64_range(min, max), random_f64_range(min, max), random_f64_range(min, max)}
+}
+
+// Returns true if the vector is close to zero in all directions
+vec3_near_zero :: proc(vec: Vec3) -> bool {
+	s := 1e-8
+	return math.abs(vec.x) < s && math.abs(vec.y) < s && math.abs(vec.z) < s
 }

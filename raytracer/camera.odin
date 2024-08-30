@@ -112,11 +112,17 @@ ray_color :: proc(r: Ray, depth: int, world: ^HittableList) -> Color {
 
 	rec: HitRecord
 
+	// TODO: make r more descriptive
 	if process_hit(world, r, Interval{0.001, INFINITY}, &rec) {
 		// direction := vec3_random_unit_vector_on_hemisphere(rec.normal)
 		// Required for lambertian diffuse models
-		direction := rec.normal + vec3_random_unit_vector()
-		return 0.7 * ray_color(ray_new(rec.point, direction), depth - 1, world)
+		// direction := rec.normal + vec3_random_unit_vector()
+		// return 0.7 * ray_color(ray_new(rec.point, direction), depth - 1, world)
+		scattered := ray_new({0, 0, 0}, {0, 0, 0})
+		attenuation := Color{0, 0, 0}
+		if rec.material.scatter(rec.material.data, r, rec, &attenuation, &scattered) {
+			return attenuation * ray_color(scattered, depth - 1, world)
+		}
 	}
 
 	unit_direction := vec3_normalize(r.dir)
