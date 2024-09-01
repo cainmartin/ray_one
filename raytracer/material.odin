@@ -48,11 +48,13 @@ lambertian_scatter :: proc(
 // Metal material
 Metal :: struct {
 	albedo: Color,
+	fuzz:   f64,
 }
 
-metal_new :: proc(albedo: Color) -> ^Metal {
+metal_new :: proc(albedo: Color, fuzz: f64) -> ^Metal {
 	metal := new(Metal)
 	metal.albedo = albedo
+	metal.fuzz = fuzz < 1 ? fuzz : 1
 	return metal
 }
 
@@ -66,8 +68,9 @@ metal_scatter :: proc(
 	metal := cast(^Metal)data
 
 	reflected := vec3_reflect(ray_in.dir, rec.normal)
+	reflected = vec3_normalize(reflected) + (metal.fuzz * vec3_random_unit_vector())
 	ray_scattered^ = ray_new(rec.point, reflected)
 	attenuation^ = metal.albedo
 
-	return true
+	return vec3_dot(ray_scattered.dir, rec.normal) > 0
 }

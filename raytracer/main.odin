@@ -38,13 +38,13 @@ main :: proc() {
 
 	material_left := new(Material)
 	material_left^ = Material {
-		data    = metal_new(Color{0.8, 0.8, 0.8}),
+		data    = metal_new(Color{0.8, 0.8, 0.8}, 0.3),
 		scatter = metal_scatter,
 	}
 
 	material_right := new(Material)
 	material_right^ = Material {
-		data    = metal_new(Color{0.8, 0.6, 0.2}),
+		data    = metal_new(Color{0.8, 0.6, 0.2}, 1.0),
 		scatter = metal_scatter,
 	}
 
