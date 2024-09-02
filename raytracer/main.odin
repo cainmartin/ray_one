@@ -63,7 +63,7 @@ main :: proc() {
 	camera := camera_new()
 
 	camera_init(&camera, image_width, ratio, samples_per_pixel, max_depth)
-	camera_render(&camera, "test_img.ppm", &world)
+	camera_render(&camera, "test_img2.ppm", &world)
 
 	// cleanup
 	for hittable in world.objects {

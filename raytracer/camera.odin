@@ -61,7 +61,7 @@ camera_init :: proc(
 
 camera_render :: proc(camera: ^Camera, filename: string, world: ^HittableList) {
 
-	fd, err := os.open(filename, os.O_CREATE | os.O_RDWR | os.O_TRUNC)
+	fd, err := os.open(filename, os.O_CREATE | os.O_RDWR | os.O_TRUNC, 0o664)
 	defer os.close(fd)
 
 	if err != os.ERROR_NONE {
@@ -90,6 +90,7 @@ camera_render :: proc(camera: ^Camera, filename: string, world: ^HittableList) {
 	}
 
 	os.write_string(fd, strings.to_string(builder))
+
 	fmt.println("\nRender complete.")
 }
 
@@ -114,19 +115,17 @@ ray_color :: proc(r: Ray, depth: int, world: ^HittableList) -> Color {
 
 	// TODO: make r more descriptive
 	if process_hit(world, r, Interval{0.001, INFINITY}, &rec) {
-		// direction := vec3_random_unit_vector_on_hemisphere(rec.normal)
-		// Required for lambertian diffuse models
-		// direction := rec.normal + vec3_random_unit_vector()
-		// return 0.7 * ray_color(ray_new(rec.point, direction), depth - 1, world)
+
 		scattered := ray_new({0, 0, 0}, {0, 0, 0})
 		attenuation := Color{0, 0, 0}
 		if rec.material.scatter(rec.material.data, r, rec, &attenuation, &scattered) {
 			return attenuation * ray_color(scattered, depth - 1, world)
 		}
+		return Color{0, 0, 0}
 	}
 
 	unit_direction := vec3_normalize(r.dir)
 	a := 0.5 * unit_direction.y + 1.0
 
-	return (1.0 - a) * Color{1.0, 1.0, 1.0} + a * Color{0.5, 0.7, 1.0}
+	return (a - 1.0) * Color{1.0, 1.0, 1.0} + a * Color{0.5, 0.7, 1.0}
 }

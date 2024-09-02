@@ -68,6 +68,7 @@ metal_scatter :: proc(
 	metal := cast(^Metal)data
 
 	reflected := vec3_reflect(ray_in.dir, rec.normal)
+
 	reflected = vec3_normalize(reflected) + (metal.fuzz * vec3_random_unit_vector())
 	ray_scattered^ = ray_new(rec.point, reflected)
 	attenuation^ = metal.albedo
