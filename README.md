@@ -1,7 +1,8 @@
 # ray_one - WIP
 Raytracing in a weekend - Book One
 
-PLEASE NOTE: This is a work in progress, about 50% of the way through the book so far
+PLEASE NOTE: While the content is finished, this code base could do with a cleanup. I was working through 
+the book while learning Odin-lang, so there will be inefficiencies and non-idiomatic choices.
 
 # Overview
 Odin is a programming language that is similar to C and very well suited to graphics programming.
