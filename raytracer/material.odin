@@ -75,3 +75,33 @@ metal_scatter :: proc(
 
 	return vec3_dot(ray_scattered.dir, rec.normal) > 0
 }
+
+// Dielectric material (always reflects)
+Dielectric :: struct {
+	refraction_index: f64,
+}
+
+dielectric_new :: proc(refraction_index: f64) -> ^Dielectric {
+	dielectric := new(Dielectric)
+	dielectric.refraction_index = refraction_index
+
+	return dielectric
+}
+
+dielectric_scatter :: proc(
+	data: rawptr,
+	ray_in: Ray,
+	rec: HitRecord,
+	attenuation: ^Color,
+	ray_scattered: ^Ray,
+) -> bool {
+	dielectric := cast(^Dielectric)data
+
+	attenuation^ = Color{1.0, 1.0, 1.0}
+	ri := rec.front_face ? (1.0 / dielectric.refraction_index) : dielectric.refraction_index
+	unit_direction := vec3_normalize(ray_in.dir)
+	refracted := vec3_refract(unit_direction, rec.normal, ri)
+	ray_scattered^ = ray_new(rec.point, refracted)
+
+	return true
+}

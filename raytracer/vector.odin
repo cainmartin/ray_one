@@ -61,6 +61,14 @@ vec3_reflect :: proc(v, n: Vec3) -> Vec3 {
 	return v - 2.0 * vec3_dot(v, n) * n
 }
 
+vec3_refract :: proc(uv: Vec3, n: Vec3, etai_over_etat: Vec3) -> Vec3 {
+	cos_theta := math.min(vec3_dot(-uv, n), 1.0)
+	r_out_perp := etai_over_etat * (uv + cos_theta * n)
+	r_out_parallel := -math.sqrt(math.abs(1.0 - vec3_length_squared(r_out_perp))) * n
+
+	return r_out_perp + r_out_parallel
+}
+
 vec3_random :: proc(min: f64, max: f64) -> Vec3 {
 	return Vec3{random_f64_range(min, max), random_f64_range(min, max), random_f64_range(min, max)}
 }

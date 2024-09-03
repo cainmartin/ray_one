@@ -38,8 +38,8 @@ main :: proc() {
 
 	material_left := new(Material)
 	material_left^ = Material {
-		data    = metal_new(Color{0.8, 0.8, 0.8}, 0.3),
-		scatter = metal_scatter,
+		data    = dielectric_new(1.50),
+		scatter = dielectric_scatter,
 	}
 
 	material_right := new(Material)
@@ -63,7 +63,7 @@ main :: proc() {
 	camera := camera_new()
 
 	camera_init(&camera, image_width, ratio, samples_per_pixel, max_depth)
-	camera_render(&camera, "test_img2.ppm", &world)
+	camera_render(&camera, "test_img.ppm", &world)
 
 	// cleanup
 	for hittable in world.objects {
