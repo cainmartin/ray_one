@@ -27,3 +27,11 @@ write_color :: proc(builder: ^strings.Builder, color: Color) {
 
 	fmt.sbprintf(builder, "%d %d %d\n", rbyte, gbyte, bbyte)
 }
+
+color_random :: proc() -> Color {
+	return {random_f64_range(0, 1), random_f64_range(0, 1), random_f64_range(0, 1)}
+}
+
+color_random_range :: proc(min: f64, max: f64) -> Color {
+	return {random_f64_range(min, max), random_f64_range(min, max), random_f64_range(min, max)}
+}

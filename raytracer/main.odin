@@ -15,67 +15,144 @@ import "core:strings"
 main :: proc() {
 	fmt.println("Book 1 - Raytracing in a weekend < WIP >")
 
-	ratio := 16.0 / 9.0
-	image_width := 800
-	samples_per_pixel := 100
-	max_depth := 50
-
 	// Create the world
 	world: HittableList
 
 	// First material
 	material_ground := new(Material)
 	material_ground^ = Material {
-		data    = lambertian_new(Color{0.8, 0.8, 0.0}),
+		data    = lambertian_new(Color{0.5, 0.5, 0.5}),
 		scatter = lambertian_scatter,
 	}
 
-	material_center := new(Material)
-	material_center^ = Material {
-		data    = lambertian_new(Color{0.1, 0.2, 0.5}),
+	// material_center := new(Material)
+	// material_center^ = Material {
+	// 	data    = lambertian_new(Color{0.1, 0.2, 0.5}),
+	// 	scatter = lambertian_scatter,
+	// }
+
+	// material_left := new(Material)
+	// material_left^ = Material {
+	// 	data    = dielectric_new(1.50),
+	// 	scatter = dielectric_scatter,
+	// }
+
+	// material_bubble := new(Material)
+	// material_bubble^ = Material {
+	// 	data    = dielectric_new(1.0 / 1.50),
+	// 	scatter = dielectric_scatter,
+	// }
+
+	// material_right := new(Material)
+	// material_right^ = Material {
+	// 	data    = metal_new(Color{0.8, 0.6, 0.2}, 1.0),
+	// 	scatter = metal_scatter,
+	// }
+
+	sphere_ground := sphere_new(Vec3{0.0, -1000.0, -1.0}, 1000.0, material_ground)
+	append(
+		&world.objects,
+		Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere_ground},
+	)
+
+	for a := -11; a < 11; a += 1 {
+		for b := -11; b < 11; b += 1 {
+			choose_mat := random_f64()
+			center := Point3{cast(f64)a + 0.9 * random_f64(), 0.2, cast(f64)b + 0.9 * random_f64()}
+
+
+			if vec3_length(center - Point3{4.0, 0.2, 0.0}) > 0.9 { 	// Lambertian
+				material := new(Material)
+				material^ = Material {
+					data    = lambertian_new(color_random() * color_random()),
+					scatter = lambertian_scatter,
+				}
+
+				sphere := sphere_new(center, 0.2, material)
+				append(
+					&world.objects,
+					Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere},
+				)
+			} else if choose_mat < 0.95 { 	// Metal
+				material := new(Material)
+				material^ = Material {
+					data    = metal_new(color_random_range(0.5, 1.0), random_f64_range(0, 0.5)),
+					scatter = metal_scatter,
+				}
+
+				sphere := sphere_new(center, 0.2, material)
+				append(
+					&world.objects,
+					Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere},
+				)
+			} else { 	// Glass
+				material := new(Material)
+				material^ = Material {
+					data    = dielectric_new(1.5),
+					scatter = dielectric_scatter,
+				}
+
+				sphere := sphere_new(center, 0.2, material)
+				append(
+					&world.objects,
+					Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere},
+				)
+			}
+		}
+	}
+
+	material1 := new(Material)
+	material1^ = Material {
+		data    = dielectric_new(1.5),
+		scatter = dielectric_scatter,
+	}
+
+	sphere1 := sphere_new(Point3{-4, 1, 0}, 0.2, material1)
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
+
+
+	material2 := new(Material)
+	material2^ = Material {
+		data    = lambertian_new(Color{0.4, 0.2, 0.1}),
 		scatter = lambertian_scatter,
 	}
 
-	material_left := new(Material)
-	material_left^ = Material {
-		data    = dielectric_new(1.50),
-		scatter = dielectric_scatter,
-	}
+	sphere2 := sphere_new(Point3{-4, 1, 0}, 0.2, material2)
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
 
-	material_bubble := new(Material)
-	material_bubble^ = Material {
-		data    = dielectric_new(1.0 / 1.50),
-		scatter = dielectric_scatter,
-	}
-
-	material_right := new(Material)
-	material_right^ = Material {
-		data    = metal_new(Color{0.8, 0.6, 0.2}, 1.0),
+	material3 := new(Material)
+	material3^ = Material {
+		data    = metal_new(Color{0.7, 0.6, 0.5}, 0.0),
 		scatter = metal_scatter,
 	}
 
-	// TODO: We will attempt to delete the memory more than once here
-	sphere1 := sphere_new(Vec3{0.0, -100.5, -1.0}, 100.0, material_ground)
-	sphere2 := sphere_new(Vec3{0.0, 0.0, -1.2}, 0.5, material_center)
-	sphere3 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.5, material_left)
-	sphere4 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.4, material_bubble)
-	sphere5 := sphere_new(Vec3{1.0, 0.0, -1.0}, 0.5, material_right)
+	sphere3 := sphere_new(Point3{-4, 1, 0}, 0.2, material3)
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
+
+	// sphere2 := sphere_new(Vec3{0.0, 0.0, -1.2}, 0.5, material_center)
+	// sphere3 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.5, material_left)
+	// sphere4 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.4, material_bubble)
+	// sphere5 := sphere_new(Vec3{1.0, 0.0, -1.0}, 0.5, material_right)
 
 	// TODO: THIS IS A POTENTIAL MEMORY ISSUE
-	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
-	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
-	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
-	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere4})
-	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere5})
+	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
+	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
+	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
+	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere4})
+	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere5})
 
 	camera := camera_new()
 
+	ratio := 16.0 / 9.0
+	image_width := 1200
+	samples_per_pixel := 500
+	max_depth := 50
 	fov := 20.0
-	lookat := Point3{-2, 2, 1}
-	lookfrom := Point3{0, 0, -1}
+	lookfrom := Point3{13, 2, 3}
+	lookat := Point3{0, 0, 0}
 	vup := Vec3{0, 1, 0}
-	defocus_angle := 10.0
-	focus_dist := 3.4
+	defocus_angle := 0.6
+	focus_dist := 10.0
 
 	camera_init(
 		&camera,
@@ -84,8 +161,8 @@ main :: proc() {
 		samples_per_pixel,
 		max_depth,
 		fov,
-		lookat,
 		lookfrom,
+		lookat,
 		vup,
 		defocus_angle,
 		focus_dist,

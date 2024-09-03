@@ -10,7 +10,11 @@ being used to the language and what is idiomatic, the result is a little haphaza
 do some refactoring once I understand the language a bit better.
 
 # Raytracer
-<WIP>
+
+The following image was produced using a value for samples_per_pixel of 500. This will give a high quality
+render, but will be very slow.
+
+![Alt text](images/test_image.jpg)
 
 # Build and run 
 
