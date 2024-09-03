@@ -23,6 +23,15 @@ vec3_normalize :: proc(v: Vec3) -> Vec3 {
 	return v / length
 }
 
+vec3_random_in_unit_disk :: proc() -> Vec3 {
+	for {
+		p := Vec3{random_f64_range(-1, 1), random_f64_range(-1, 1), 0}
+		if vec3_length_squared(p) < 1 {
+			return p
+		}
+	}
+}
+
 vec3_random_in_unit_sphere :: proc() -> Vec3 {
 	for {
 		p := vec3_random(-1.0, 1.0)

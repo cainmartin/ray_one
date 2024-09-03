@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math"
 
 Material :: struct {
 	data:    rawptr,
@@ -100,8 +101,25 @@ dielectric_scatter :: proc(
 	attenuation^ = Color{1.0, 1.0, 1.0}
 	ri := rec.front_face ? (1.0 / dielectric.refraction_index) : dielectric.refraction_index
 	unit_direction := vec3_normalize(ray_in.dir)
-	refracted := vec3_refract(unit_direction, rec.normal, ri)
-	ray_scattered^ = ray_new(rec.point, refracted)
+	cos_theta := math.min(vec3_dot(-unit_direction, rec.normal), 1.0)
+	sin_theta := math.sqrt(1.0 - cos_theta * cos_theta)
+
+	cannot_refract := ri * sin_theta > 1.0
+	direction := Vec3{0, 0, 0}
+
+	if cannot_refract || dielectric_reflectance(cos_theta, ri) > random_f64() {
+		direction = vec3_reflect(unit_direction, rec.normal)
+	} else {
+		direction = vec3_refract(unit_direction, rec.normal, ri)
+	}
+
+	ray_scattered^ = ray_new(rec.point, direction)
 
 	return true
+}
+
+dielectric_reflectance :: proc(cosine: f64, refraction_index: f64) -> f64 {
+	r0 := (1 - refraction_index) / (1 + refraction_index)
+	r0 = r0 * r0
+	return r0 + (1 - r0) * math.pow((1 - cosine), 5)
 }

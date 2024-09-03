@@ -42,6 +42,12 @@ main :: proc() {
 		scatter = dielectric_scatter,
 	}
 
+	material_bubble := new(Material)
+	material_bubble^ = Material {
+		data    = dielectric_new(1.0 / 1.50),
+		scatter = dielectric_scatter,
+	}
+
 	material_right := new(Material)
 	material_right^ = Material {
 		data    = metal_new(Color{0.8, 0.6, 0.2}, 1.0),
@@ -52,17 +58,39 @@ main :: proc() {
 	sphere1 := sphere_new(Vec3{0.0, -100.5, -1.0}, 100.0, material_ground)
 	sphere2 := sphere_new(Vec3{0.0, 0.0, -1.2}, 0.5, material_center)
 	sphere3 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.5, material_left)
-	sphere4 := sphere_new(Vec3{1.0, 0.0, -1.0}, 0.5, material_right)
+	sphere4 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.4, material_bubble)
+	sphere5 := sphere_new(Vec3{1.0, 0.0, -1.0}, 0.5, material_right)
 
 	// TODO: THIS IS A POTENTIAL MEMORY ISSUE
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere4})
+	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere5})
 
 	camera := camera_new()
 
-	camera_init(&camera, image_width, ratio, samples_per_pixel, max_depth)
+	fov := 20.0
+	lookat := Point3{-2, 2, 1}
+	lookfrom := Point3{0, 0, -1}
+	vup := Vec3{0, 1, 0}
+	defocus_angle := 10.0
+	focus_dist := 3.4
+
+	camera_init(
+		&camera,
+		image_width,
+		ratio,
+		samples_per_pixel,
+		max_depth,
+		fov,
+		lookat,
+		lookfrom,
+		vup,
+		defocus_angle,
+		focus_dist,
+	)
+
 	camera_render(&camera, "test_img.ppm", &world)
 
 	// cleanup
