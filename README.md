@@ -1,5 +1,5 @@
-# ray_one - WIP
-Raytracing in a weekend - Book One
+# ray_one
+Raytracing in a weekend - Book One, implemented in Odin-Lang
 
 PLEASE NOTE: While the content is finished, this code base could do with a cleanup. I was working through 
 the book while learning Odin-lang, so there will be inefficiencies and non-idiomatic choices.
