@@ -13,41 +13,16 @@ import "core:strings"
 // -- Change variable names so we don't use abbreviations, like orig and dir
 
 main :: proc() {
-	fmt.println("Book 1 - Raytracing in a weekend < WIP >")
+	fmt.println("Book 1 - Raytracing in a weekend")
 
 	// Create the world
 	world: HittableList
 
-	// First material
 	material_ground := new(Material)
 	material_ground^ = Material {
 		data    = lambertian_new(Color{0.5, 0.5, 0.5}),
 		scatter = lambertian_scatter,
 	}
-
-	// material_center := new(Material)
-	// material_center^ = Material {
-	// 	data    = lambertian_new(Color{0.1, 0.2, 0.5}),
-	// 	scatter = lambertian_scatter,
-	// }
-
-	// material_left := new(Material)
-	// material_left^ = Material {
-	// 	data    = dielectric_new(1.50),
-	// 	scatter = dielectric_scatter,
-	// }
-
-	// material_bubble := new(Material)
-	// material_bubble^ = Material {
-	// 	data    = dielectric_new(1.0 / 1.50),
-	// 	scatter = dielectric_scatter,
-	// }
-
-	// material_right := new(Material)
-	// material_right^ = Material {
-	// 	data    = metal_new(Color{0.8, 0.6, 0.2}, 1.0),
-	// 	scatter = metal_scatter,
-	// }
 
 	sphere_ground := sphere_new(Vec3{0.0, -1000.0, -1.0}, 1000.0, material_ground)
 	append(
@@ -129,23 +104,11 @@ main :: proc() {
 	sphere3 := sphere_new(Point3{-4, 1, 0}, 0.2, material3)
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
 
-	// sphere2 := sphere_new(Vec3{0.0, 0.0, -1.2}, 0.5, material_center)
-	// sphere3 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.5, material_left)
-	// sphere4 := sphere_new(Vec3{-1.0, 0.0, -1.0}, 0.4, material_bubble)
-	// sphere5 := sphere_new(Vec3{1.0, 0.0, -1.0}, 0.5, material_right)
-
-	// TODO: THIS IS A POTENTIAL MEMORY ISSUE
-	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
-	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
-	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
-	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere4})
-	// append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere5})
-
 	camera := camera_new()
 
 	ratio := 16.0 / 9.0
 	image_width := 1200
-	samples_per_pixel := 500
+	samples_per_pixel := 10 // 500 is high quality, but slow
 	max_depth := 50
 	fov := 20.0
 	lookfrom := Point3{13, 2, 3}
