@@ -82,7 +82,7 @@ main :: proc() {
 		scatter = dielectric_scatter,
 	}
 
-	sphere1 := sphere_new(Point3{-4, 1, 0}, 0.2, material1)
+	sphere1 := sphere_new(Point3{0, 1, 0}, 1.0, material1)
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere1})
 
 
@@ -92,7 +92,7 @@ main :: proc() {
 		scatter = lambertian_scatter,
 	}
 
-	sphere2 := sphere_new(Point3{-4, 1, 0}, 0.2, material2)
+	sphere2 := sphere_new(Point3{-4.0, 1.0, 0.0}, 1.0, material2)
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere2})
 
 	material3 := new(Material)
@@ -101,7 +101,7 @@ main :: proc() {
 		scatter = metal_scatter,
 	}
 
-	sphere3 := sphere_new(Point3{-4, 1, 0}, 0.2, material3)
+	sphere3 := sphere_new(Point3{4.0, 1.0, 0.0}, 1.0, material3)
 	append(&world.objects, Hittable{hit = sphere_hit, destroy = sphere_destroy, data = sphere3})
 
 	camera := camera_new()
